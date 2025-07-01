@@ -1,8 +1,11 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { ParallaxProvider } from 'react-scroll-parallax';
+
 import DesignerLoginPage from './pages/designer/designerlogin';
 import CustomerLoginPage from './pages/consumer/customerlogin';
 import RegisterPage from './pages/designer/designerregister';
-import DesignerHomePage from './pages/consumer/customerhome';
+import CustomerHomePage from './pages/consumer/customerhome';
+import ExplorePage from './pages/consumer/explore';
 
 const router = createBrowserRouter([
   {
@@ -18,16 +21,20 @@ const router = createBrowserRouter([
     element: <RegisterPage />,
   },
   {
-    path: '/designerhome',
-    element: <DesignerHomePage />,
+    path: '/customerhome',
+    element: <CustomerHomePage />,
+  },
+    {
+    path: '/explore',
+    element: <ExplorePage />,
   },
 ]);
 
 function App() {
   return (
-    <>
+    <ParallaxProvider>
       <RouterProvider router={router} />
-    </>
+    </ParallaxProvider>
   );
 }
 
