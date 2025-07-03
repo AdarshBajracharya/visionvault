@@ -10,7 +10,7 @@ const navItems = [
 
 const Navbar: React.FC = () => {
   return (
-    <nav className="bg-[#e9f9ff] px-8 py-4 flex items-center justify-between">
+    <nav className="bg-[#e9f9ff] px-8 py-4 flex items-center justify-between z-1000">
       {/* Logo */}
       <div className="flex items-center">
         <img

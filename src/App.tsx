@@ -6,6 +6,8 @@ import CustomerLoginPage from './pages/consumer/customerlogin';
 import RegisterPage from './pages/designer/designerregister';
 import CustomerHomePage from './pages/consumer/customerhome';
 import ExplorePage from './pages/consumer/explore';
+import ProfilePage from './pages/consumer/profilepage';
+import HirePage from './pages/consumer/hire';
 
 const router = createBrowserRouter([
   {
@@ -24,9 +26,17 @@ const router = createBrowserRouter([
     path: '/customerhome',
     element: <CustomerHomePage />,
   },
-    {
+  {
     path: '/explore',
     element: <ExplorePage />,
+  },
+  {
+    path: '/hire',
+    element: <HirePage />,
+  },
+  {
+    path: '/profile',
+    element: <ProfilePage />,
   },
 ]);
 

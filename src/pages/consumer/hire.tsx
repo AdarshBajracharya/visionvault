@@ -12,7 +12,7 @@ const sampleData = Array.from({ length: 12 }).map((_, i) => ({
   userImage: '/src/assets/images/sample_user.png',
 }));
 
-const ExplorePage: React.FC = () => {
+const HirePage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCard, setSelectedCard] = useState<any>(null);
@@ -50,10 +50,10 @@ const ExplorePage: React.FC = () => {
           className="absolute top-[280px] left-[320px] z-0 h-[280px]"
         />
         <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-20">
-          DISCOVER NEW
+          HIRE A
         </label>
         <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-20">
-          TALENTS
+          DESIGNER
         </label>
       </div>
 
@@ -169,4 +169,4 @@ const ExplorePage: React.FC = () => {
   );
 };
 
-export default ExplorePage;
+export default HirePage;

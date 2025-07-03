@@ -132,6 +132,7 @@ const CustomerLoginPage: React.FC = () => {
                 {/* Login Button */}
                 <button
                     className="w-full bg-[#5FA8D3] text-white py-3 rounded-full text-lg font-semibold hover:bg-[#4a94c1] transition-colors duration-300"
+                    onClick={() => navigate('/customerhome')}
                 >
                     Login
                 </button>
