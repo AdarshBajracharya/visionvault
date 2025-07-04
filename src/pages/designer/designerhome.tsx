@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../../assets/common/navbar';
+import Navbar2 from '../../assets/common/des_nav';
 
 const DesignerHomePage: React.FC = () => {
   const [scrollY, setScrollY] = useState(0);
@@ -100,7 +101,7 @@ const DesignerHomePage: React.FC = () => {
         }
       `}</style>
 
-      <Navbar />
+      <Navbar2 />
 
       <img
         src="/src/assets/images/designer_home_bg.png"
@@ -114,7 +115,7 @@ const DesignerHomePage: React.FC = () => {
           <img
             src="/src/assets/images/DONUT.png"
             alt="donut1"
-            className="absolute top-40 right-38 z-30 h-105 rotate-226.91"
+            className="absolute top-37 right-55 z-30 h-105 rotate-226.91"
             style={{
               transform: `translateY(${scrollY * -0.3}px)`,
               animation: 'zoomInSmooth 0.5s ease-in-out',
@@ -123,41 +124,38 @@ const DesignerHomePage: React.FC = () => {
           <img
             src="/src/assets/images/DONUT.png"
             alt="donut2"
-            className="absolute top-75 left-41 z-50 h-105 rotate-300"
+            className="absolute top-50 left-48 z-50 h-105 rotate-300"
             style={{
               transform: `translateY(${scrollY * 0.3}px)`,
               animation: 'zoomInSmooth 0.5s ease-in-out 0.1s both',
             }}
           />
           <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-20">WELCOME</label>
-          <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-40">DESIGNER</label>    
+          <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-40">DESIGNER</label>
         </div>
 
-        {/* About Consumer */}
-        <div className="mt-70 px-85 text-[#1B4965] text-2xl">
+        {/* About Designer */}
+        <div className="mt-80 px-85 text-[#1B4965] text-2xl">
           <p className="font-encode">
             What do you do in VisionVault <br />
-            <label className="font-bold">as a consumer?</label>
+            <label className="font-bold">as a designer?</label>
             <br /><br />
-            As a consumer in VisionVault, you explore <br />
-            verified designer portfolios, try out <br />
-            previews of digital art or products, <br />
-            purchase creative works directly, and <br />
-            connect with designers for custom <br />
-            projects, all through a seamless and secure <br />
-            experience.
+            As a designer in VisionVault, you  <br />
+            showcase your portfolio, receive feedback <br />
+            from the community, discover freelance <br />
+            opportunities through AI-matched  <br />
+            projects, and sell your work directly  <br />
+            through an integrated shop, all in one  <br />
+            trusted and interactive platform.
           </p>
           <div className="mt-5">
-            <button className="bg-[#5FA8D3] text-white font-bold py-3 px-10 rounded font-poppins text-xl">
-              Explore
-            </button>
-            <button className="bg-white text-[#5FA8D3] font-bold py-3 px-10 rounded ml-4 font-poppins text-xl border-2 border-[#5FA8D3]">
-              Hire a Designer
+            <button className="bg-white text-[#5FA8D3] mt-5 font-bold py-2 px-18 rounded font-poppins text-lg border-1 border-[#5FA8D3]">
+              Find Jobs
             </button>
             <img
               src="/src/assets/images/jellyfish.png"
               alt="Designer Home Graphic"
-              className="absolute top-175 right-60 z-10 h-150"
+              className="absolute top-170 right-60 z-10 h-150"
               style={{
                 transform: `scale(${Math.max(1 - scrollY * 0.0005, 0.75)})`,
                 transition: 'transform 0.1s ease-out',
@@ -192,9 +190,8 @@ const DesignerHomePage: React.FC = () => {
             {sections.map((section, index) => (
               <div
                 key={index}
-                className={`absolute w-full px-10 transition-all duration-500 ease-in-out flex justify-center items-center ${
-                  index === currentIndex ? 'fade-slide active' : 'fade-slide'
-                }`}
+                className={`absolute w-full px-10 transition-all duration-500 ease-in-out flex justify-center items-center ${index === currentIndex ? 'fade-slide active' : 'fade-slide'
+                  }`}
               >
                 <div className="max-w-screen-xl flex flex-row items-center gap-20">
                   <img src={section.img} alt={section.title} className="h-80" />

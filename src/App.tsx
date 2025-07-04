@@ -9,6 +9,11 @@ import ExplorePage from './pages/consumer/explore';
 import ProfilePage from './pages/consumer/profilepage';
 import HirePage from './pages/consumer/hire';
 import CreateJobPostPage from './pages/consumer/post';
+import DesignerHomePage from './pages/designer/designerhome';
+import FindJobsPage from './pages/designer/findjobs';
+import ProfilePage2 from './pages/designer/profile';
+import CreatePostPage from './pages/designer/createpost';
+
 
 const router = createBrowserRouter([
   {
@@ -42,6 +47,22 @@ const router = createBrowserRouter([
   {
     path: '/postjob',
     element: <CreateJobPostPage />,
+  },
+  {
+    path: '/designerhome',
+    element: <DesignerHomePage />,
+  },
+  {
+    path: '/findjobs',
+    element: <FindJobsPage />,
+  },
+  {
+    path: '/profiledes',
+    element: <ProfilePage2 />,
+  },
+   {
+    path: '/addpost',
+    element: <CreatePostPage />,
   },
 ]);
 
