@@ -36,25 +36,28 @@ const HirePage: React.FC = () => {
       <img
         src="/src/assets/images/designer_home_bg.png"
         alt="Designer Home Background"
-        className="rotate-[197.75deg] h-[500px] object-cover absolute top-[120px] left-[420px] inset-0 z-0 opacity-90"
+        className="rotate-[1.71deg] h-[500px] object-cover absolute top-[120px] left-[420px] inset-0 z-0 opacity-90"
       />
       <div className="flex flex-col items-center justify-center h-screen absolute top-0 left-0 w-full z-10 pointer-events-none">
         <img
-          src="/src/assets/images/plane.png"
-          alt="plane"
-          className="absolute top-[240px] right-[180px] z-50 h-[420px]"
+          src="/src/assets/images/laltin.png"
+          alt="laltin"
+          className="rotate-[1.02deg] absolute top-[100px] right-[290px] z-50 h-[550px] "
         />
         <img
-          src="/src/assets/images/trail.png"
-          alt="trail"
-          className="absolute top-[280px] left-[320px] z-0 h-[280px]"
+          src="/src/assets/images/speaker.png"
+          alt="speaker"
+          className="absolute top-[130px] left-[280px] z-50 h-[420px] rotate-11.33"
         />
         <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-20">
           HIRE A
         </label>
-        <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-20">
+        <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-60">
           DESIGNER
         </label>
+        <button className="absolute bg-white text-[#5FA8D3] font-bold py-2 px-20 rounded ml-4 font-poppins text-xl border-1 border-[#5FA8D3] top-123  right-155 z-70">
+          Post a Job
+        </button>
       </div>
 
       {/* Portfolio Section */}
@@ -78,44 +81,53 @@ const HirePage: React.FC = () => {
             <button
               key={item}
               onClick={() => setSelectedCategory(item)}
-              className={`rounded-xl px-10 py-3 transition ${
-                selectedCategory === item
-                  ? 'bg-[#94d6f5] text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
+              className={`rounded-xl px-10 py-3 transition ${selectedCategory === item
+                ? 'bg-[#94d6f5] text-white'
+                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
             >
               {item}
             </button>
           ))}
         </div>
 
-        {/* Portfolio Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Designer Cards Grid */}
+        <div className="flex flex-col gap-6">
           {filterData.map((item) => (
             <div
               key={item.id}
-              onClick={() => setSelectedCard(item)}
-              className="bg-white rounded-xl shadow-md overflow-hidden cursor-pointer transition hover:shadow-xl"
+              className="bg-white rounded-2xl shadow-lg p-4 flex flex-col gap-4"
             >
-              <img
-                src={item.portfolioImage}
-                alt="Portfolio"
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4 flex items-center gap-4">
-                <img
-                  src={item.userImage}
-                  alt="User"
-                  className="w-12 h-12 rounded-full"
-                />
-                <div>
-                  <p className="font-semibold">{item.name}</p>
-                  <p className="text-sm text-gray-500">{item.role}</p>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={item.userImage}
+                    alt="User"
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-semibold">{item.name}</p>
+                    <p className="text-gray-500 text-sm">{item.role}</p>
+                  </div>
                 </div>
+                <button className="text-blue-500 hover:underline font-medium">
+                  View Profile
+                </button>
+              </div>
+              <div className="flex gap-4 overflow-x-auto">
+                {[1, 2, 3].map((i) => (
+                  <img
+                    key={i}
+                    src={item.portfolioImage}
+                    alt={`Preview ${i}`}
+                    className="rounded-xl object-cover h-32 w-full sm:w-1/3 flex-shrink-0"
+                  />
+                ))}
               </div>
             </div>
           ))}
         </div>
+
       </div>
 
       {/* Fullscreen Card Detail Modal */}

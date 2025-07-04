@@ -8,6 +8,7 @@ import CustomerHomePage from './pages/consumer/customerhome';
 import ExplorePage from './pages/consumer/explore';
 import ProfilePage from './pages/consumer/profilepage';
 import HirePage from './pages/consumer/hire';
+import CreateJobPostPage from './pages/consumer/post';
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
   {
     path: '/profile',
     element: <ProfilePage />,
+  },
+  {
+    path: '/postjob',
+    element: <CreateJobPostPage />,
   },
 ]);
 
