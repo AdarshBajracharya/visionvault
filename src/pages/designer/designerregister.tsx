@@ -1,6 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 
 const RegisterPage: React.FC = () => {
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        password: '',
+        phone: '',
+        role: '',
+        experience: '',
+        portfolio: '',
+    });
+
+    const [message, setMessage] = useState('');
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value,
+        });
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const res = await axios.post('http://localhost:3000/api/v1/designer/register', formData);
+            setMessage('✅ Registered successfully!');
+            console.log(res.data);
+        } catch (error: any) {
+            setMessage(`❌ ${error?.response?.data?.message || 'Registration failed'}`);
+        }
+    };
+
     return (
         <div
             className="min-h-screen flex items-center justify-center font-sans relative"
@@ -10,25 +41,24 @@ const RegisterPage: React.FC = () => {
                 backgroundPosition: 'center',
             }}
         >
-            {/* Overlay */}
             <div className="absolute inset-0 bg-[#C5F6FF] opacity-50 z-0"></div>
 
-            {/* Content */}
             <div className="relative z-10 w-full max-w-6xl flex flex-row items-center justify-between px-12 py-8">
-                {/* Left Side Logo */}
                 <img
                     src="src/assets/images/V.png"
                     alt="Logo Placeholder"
-                    className=" absolute w-165 h-165 object-contain right-150"
+                    className="absolute w-165 h-165 object-contain right-150"
                 />
 
-                {/* Right Side Form */}
-                <div className="w-[500px] bg-transparent backdrop-blur-md rounded-xl  space-y-6 ml-150">
-                    <form className="space-y-4">
+                <div className="w-[500px] bg-transparent backdrop-blur-md rounded-xl space-y-6 ml-150">
+                    <form className="space-y-4" onSubmit={handleSubmit}>
                         <div>
                             <label className="text-gray-700 font-medium">Name</label>
                             <input
+                                name="name"
                                 type="text"
+                                value={formData.name}
+                                onChange={handleChange}
                                 className="w-full px-4 py-3 border rounded-full shadow-md focus:ring-2 focus:ring-blue-300 outline-none"
                                 placeholder="Enter your name"
                             />
@@ -37,7 +67,10 @@ const RegisterPage: React.FC = () => {
                         <div>
                             <label className="text-gray-700 font-medium">Email</label>
                             <input
+                                name="email"
                                 type="email"
+                                value={formData.email}
+                                onChange={handleChange}
                                 className="w-full px-4 py-3 border rounded-full shadow-md focus:ring-2 focus:ring-blue-300 outline-none"
                                 placeholder="Enter your email"
                             />
@@ -46,7 +79,10 @@ const RegisterPage: React.FC = () => {
                         <div>
                             <label className="text-gray-700 font-medium">Password</label>
                             <input
+                                name="password"
                                 type="password"
+                                value={formData.password}
+                                onChange={handleChange}
                                 className="w-full px-4 py-3 border rounded-full shadow-md focus:ring-2 focus:ring-blue-300 outline-none"
                                 placeholder="Enter your password"
                             />
@@ -56,7 +92,10 @@ const RegisterPage: React.FC = () => {
                             <div className="w-3/5">
                                 <label className="text-gray-700 font-medium">Phone number</label>
                                 <input
+                                    name="phone"
                                     type="tel"
+                                    value={formData.phone}
+                                    onChange={handleChange}
                                     className="w-full px-4 py-3 border rounded-full shadow-md focus:ring-2 focus:ring-blue-300 outline-none"
                                     placeholder="Phone number"
                                 />
@@ -64,7 +103,10 @@ const RegisterPage: React.FC = () => {
                             <div className="w-2/5">
                                 <label className="text-gray-700 font-medium">I am a</label>
                                 <input
+                                    name="role"
                                     type="text"
+                                    value={formData.role}
+                                    onChange={handleChange}
                                     className="w-full px-4 py-3 border rounded-full shadow-md focus:ring-2 focus:ring-blue-300 outline-none"
                                     placeholder="Designer / Customer"
                                 />
@@ -75,7 +117,10 @@ const RegisterPage: React.FC = () => {
                             <div className="w-1/2">
                                 <label className="text-gray-700 font-medium">Experience</label>
                                 <input
+                                    name="experience"
                                     type="text"
+                                    value={formData.experience}
+                                    onChange={handleChange}
                                     className="w-full px-4 py-3 border rounded-full shadow-md focus:ring-2 focus:ring-blue-300 outline-none"
                                     placeholder="e.g. 3 years"
                                 />
@@ -83,7 +128,10 @@ const RegisterPage: React.FC = () => {
                             <div className="w-1/2">
                                 <label className="text-gray-700 font-medium">Portfolio</label>
                                 <input
+                                    name="portfolio"
                                     type="text"
+                                    value={formData.portfolio}
+                                    onChange={handleChange}
                                     className="w-full px-4 py-3 border rounded-full shadow-md focus:ring-2 focus:ring-blue-300 outline-none"
                                     placeholder="Portfolio link"
                                 />
@@ -96,6 +144,10 @@ const RegisterPage: React.FC = () => {
                         >
                             Register
                         </button>
+
+                        {message && (
+                            <p className="text-center mt-2 text-sm text-red-600">{message}</p>
+                        )}
                     </form>
 
                     <p className="text-center text-[#0f2e47] mt-4 text-md">
@@ -104,7 +156,6 @@ const RegisterPage: React.FC = () => {
                             Login Here
                         </a>
                     </p>
-
                 </div>
             </div>
         </div>
