@@ -16,16 +16,14 @@ const RegisterPage: React.FC = () => {
             {/* Content */}
             <div className="relative z-10 w-full max-w-6xl flex flex-row items-center justify-between px-12 py-8">
                 {/* Left Side Logo */}
-                <div className="w-1/2 flex flex-col items-center justify-center">
-                    <div className="text-center">
-                        <h1 className="text-[140px] font-bold leading-none text-black">V</h1>
-                        <h2 className="text-[32px] text-[#8B5E3C] italic -mt-6">VisionVault</h2>
-                        <h1 className="text-[140px] font-bold leading-none text-black -mt-6">V</h1>
-                    </div>
-                </div>
+                <img
+                    src="src/assets/images/V.png"
+                    alt="Logo Placeholder"
+                    className=" absolute w-165 h-165 object-contain right-150"
+                />
 
                 {/* Right Side Form */}
-                <div className="w-1/2 bg-transparent backdrop-blur-md rounded-xl p-8 space-y-6">
+                <div className="w-[500px] bg-transparent backdrop-blur-md rounded-xl  space-y-6 ml-150">
                     <form className="space-y-4">
                         <div>
                             <label className="text-gray-700 font-medium">Name</label>
@@ -55,7 +53,7 @@ const RegisterPage: React.FC = () => {
                         </div>
 
                         <div className="flex space-x-4">
-                            <div className="w-1/2">
+                            <div className="w-3/5">
                                 <label className="text-gray-700 font-medium">Phone number</label>
                                 <input
                                     type="tel"
@@ -63,7 +61,7 @@ const RegisterPage: React.FC = () => {
                                     placeholder="Phone number"
                                 />
                             </div>
-                            <div className="w-1/2">
+                            <div className="w-2/5">
                                 <label className="text-gray-700 font-medium">I am a</label>
                                 <input
                                     type="text"
@@ -102,11 +100,11 @@ const RegisterPage: React.FC = () => {
 
                     <p className="text-center text-[#0f2e47] mt-4 text-md">
                         Already have an account?{' '}
-                        <a href="/login" className="text-[#0f2e47] font-semibold underline hover:text-blue-600">
+                        <a href="/" className="text-[#0f2e47] font-semibold underline hover:text-blue-600">
                             Login Here
                         </a>
                     </p>
-                    
+
                 </div>
             </div>
         </div>

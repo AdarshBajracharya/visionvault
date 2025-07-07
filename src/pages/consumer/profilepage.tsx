@@ -36,6 +36,11 @@ const ProfilePage: React.FC = () => {
   return (
     <div className="bg-[#e9f9ff] min-h-screen">
       <Navbar />
+      <img
+                src="src/assets/images/designer_home_bg.png"
+                alt="Background"
+                className="absolute top-10 left-50 w-150 h-150 object-cover z-0"
+            />
 
       {/* Banner */}
       <div className="flex flex-col items-center text-center py-10 relative">

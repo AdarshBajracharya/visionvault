@@ -129,14 +129,14 @@ const ConsumerHomePage: React.FC = () => {
               animation: 'zoomInSmooth 0.5s ease-in-out 0.1s both',
             }}
           />
-          <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-20">ILLUSTRATION</label>
-          <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-40">UI/UX DESIGN</label>
-          <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-60">ANIMATION</label>
+          <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg text-stroke z-20">ILLUSTRATION</label>
+          <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg text-stroke z-40">UI/UX DESIGN</label>
+          <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg text-stroke z-60">ANIMATION</label>
         </div>
 
         {/* About Consumer */}
         <div className="mt-70 px-85 text-[#1B4965] text-2xl">
-          <p className="font-encode">
+          <p className="">
             What do you do in VisionVault <br />
             <label className="font-bold">as a consumer?</label>
             <br /><br />
@@ -158,7 +158,7 @@ const ConsumerHomePage: React.FC = () => {
             <img
               src="/src/assets/images/jellyfish.png"
               alt="Designer Home Graphic"
-              className="absolute top-175 right-60 z-10 h-150"
+              className="absolute top-175 right-50 z-10 h-150"
               style={{
                 transform: `scale(${Math.max(1 - scrollY * 0.0005, 0.75)})`,
                 transition: 'transform 0.1s ease-out',
@@ -199,7 +199,7 @@ const ConsumerHomePage: React.FC = () => {
               >
                 <div className="max-w-screen-xl flex flex-row items-center gap-20">
                   <img src={section.img} alt={section.title} className="h-80" />
-                  <p className="text-2xl text-[#1B4965] font-encode text-left">
+                  <p className="text-2xl text-[#1B4965] text-left">
                     <b>{section.title}</b>
                     <br />
                     <br />

@@ -13,6 +13,7 @@ import DesignerHomePage from './pages/designer/designerhome';
 import FindJobsPage from './pages/designer/findjobs';
 import ProfilePage2 from './pages/designer/profile';
 import CreatePostPage from './pages/designer/createpost';
+import ProfileCard from './pages/consumer/profilecard';
 
 
 const router = createBrowserRouter([
@@ -60,9 +61,13 @@ const router = createBrowserRouter([
     path: '/profiledes',
     element: <ProfilePage2 />,
   },
-   {
+  {
     path: '/addpost',
     element: <CreatePostPage />,
+  },
+  {
+    path: '/card',
+    element: <ProfileCard />,
   },
 ]);
 

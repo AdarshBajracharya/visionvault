@@ -130,13 +130,13 @@ const DesignerHomePage: React.FC = () => {
               animation: 'zoomInSmooth 0.5s ease-in-out 0.1s both',
             }}
           />
-          <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-20">WELCOME</label>
-          <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-40">DESIGNER</label>
+          <label className="font-protest text-white text-8xl tracking-wide text-stroke drop-shadow-lg z-20">WELCOME</label>
+          <label className="font-protest text-white text-8xl tracking-wide text-stroke drop-shadow-lg z-40">DESIGNER</label>
         </div>
 
         {/* About Designer */}
         <div className="mt-80 px-85 text-[#1B4965] text-2xl">
-          <p className="font-encode">
+          <p className="">
             What do you do in VisionVault <br />
             <label className="font-bold">as a designer?</label>
             <br /><br />
@@ -155,7 +155,7 @@ const DesignerHomePage: React.FC = () => {
             <img
               src="/src/assets/images/jellyfish.png"
               alt="Designer Home Graphic"
-              className="absolute top-170 right-60 z-10 h-150"
+              className="absolute top-160 right-40 z-10 h-150"
               style={{
                 transform: `scale(${Math.max(1 - scrollY * 0.0005, 0.75)})`,
                 transition: 'transform 0.1s ease-out',
@@ -195,7 +195,7 @@ const DesignerHomePage: React.FC = () => {
               >
                 <div className="max-w-screen-xl flex flex-row items-center gap-20">
                   <img src={section.img} alt={section.title} className="h-80" />
-                  <p className="text-2xl text-[#1B4965] font-encode text-left">
+                  <p className="text-2xl text-[#1B4965] text-left">
                     <b>{section.title}</b>
                     <br />
                     <br />

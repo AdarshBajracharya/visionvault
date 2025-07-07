@@ -49,10 +49,10 @@ const ExplorePage: React.FC = () => {
           alt="trail"
           className="absolute top-[280px] left-[320px] z-0 h-[280px]"
         />
-        <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-20">
+        <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg text-stroke z-20">
           DISCOVER NEW
         </label>
-        <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-20">
+        <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg text-stroke z-20">
           TALENTS
         </label>
       </div>

@@ -49,10 +49,10 @@ const HirePage: React.FC = () => {
           alt="speaker"
           className="absolute top-[130px] left-[280px] z-50 h-[420px] rotate-11.33"
         />
-        <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-20">
+        <label className="font-protest text-white text-8xl tracking-wide text-stroke drop-shadow-lg z-20">
           HIRE A
         </label>
-        <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-60">
+        <label className="font-protest text-white text-8xl tracking-wide text-stroke drop-shadow-lg z-60">
           DESIGNER
         </label>
         <button className="absolute bg-white text-[#5FA8D3] font-bold py-2 px-20 rounded ml-4 font-poppins text-xl border-1 border-[#5FA8D3] top-123  right-155 z-70">

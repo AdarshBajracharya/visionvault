@@ -22,3 +22,7 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
 }
+
+.text-stroke {
+  -webkit-text-stroke: 1px #5E93E3; /* adjust width & color as needed */
+}

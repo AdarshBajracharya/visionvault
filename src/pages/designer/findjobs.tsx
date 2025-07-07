@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 import Navbar2 from '../../assets/common/des_nav';
 
 const sampleData = Array.from({ length: 12 }).map((_, i) => ({
@@ -43,17 +42,16 @@ const FindJobsPage: React.FC = () => {
                 <img
                     src="/src/assets/images/plane.png"
                     alt="plane"
-                    className="absolute top-[190px] right-[145px] z-50 h-[420px] rotate-[-11.33deg] "
+                    className="absolute top-[190px] right-[145px] z-50 h-[420px] rotate-[-11.33deg]"
                 />
                 <img
                     src="/src/assets/images/trail.png"
                     alt="trail"
                     className="absolute top-[290px] left-[340px] z-0 h-[280px] rotate-[-11.33deg]"
                 />
-                <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-20">
+                <label className="font-protest text-white text-8xl tracking-wide drop-shadow-lg z-20 text-stroke">
                     FIND JOBS
                 </label>
-
             </div>
 
             {/* Portfolio Section */}
@@ -78,20 +76,22 @@ const FindJobsPage: React.FC = () => {
                             key={item}
                             onClick={() => setSelectedCategory(item)}
                             className={`rounded-xl px-10 py-3 transition ${selectedCategory === item
-                                ? 'bg-[#94d6f5] text-white'
-                                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                                    ? 'bg-[#94d6f5] text-white'
+                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                                 }`}
                         >
                             {item}
                         </button>
                     ))}
                 </div>
+
                 {/* Designer Cards Grid */}
                 <div className="flex flex-col gap-6">
                     {filterData.map((item) => (
                         <div
                             key={item.id}
-                            className="bg-white rounded-2xl shadow-lg p-4 flex flex-col gap-4"
+                            onClick={() => setSelectedCard(item)}
+                            className="bg-white rounded-2xl shadow-lg p-4 flex flex-col gap-4 cursor-pointer hover:shadow-xl transition"
                         >
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
@@ -123,8 +123,53 @@ const FindJobsPage: React.FC = () => {
                     ))}
                 </div>
             </div>
-        </div>
 
+            {/* Popup Modal */}
+            {selectedCard && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+                    <div className="bg-white w-[90%] max-w-4xl rounded-3xl p-8 shadow-xl relative">
+                        <button
+                            className="absolute top-4 right-6 text-xl font-bold text-gray-600 hover:text-red-500"
+                            onClick={() => setSelectedCard(null)}
+                        >
+                            ✕
+                        </button>
+
+                        <div className="flex items-center gap-4 mb-6">
+                            <img
+                                src={selectedCard.userImage}
+                                className="w-14 h-14 rounded-full"
+                                alt="user"
+                            />
+                            <div>
+                                <h3 className="text-[#1B4965] font-bold text-lg uppercase">
+                                    Softwarica College
+                                </h3>
+                                <p className="text-gray-700">Looking for: {selectedCard.role}</p>
+                            </div>
+                        </div>
+
+                        <p className="text-gray-700 mb-6">{selectedCard.description}</p>
+
+                        <h4 className="text-[#1B4965] font-bold text-lg mb-4">Reference pics:</h4>
+                        <div className="flex flex-wrap gap-4 mb-8">
+                            {[1, 2, 3].map((i) => (
+                                <img
+                                    key={i}
+                                    src={selectedCard.portfolioImage}
+                                    alt="sample"
+                                    className="w-40 h-32 object-cover rounded-xl"
+                                />
+                            ))}
+                        </div>
+
+                        <button className="bg-[#5FA8D3] text-white px-6 py-2 rounded-xl font-semibold hover:bg-[#4a91be] transition">
+                            CONTACT
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
     );
 };
 
