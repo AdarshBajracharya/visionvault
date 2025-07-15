@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from '../../assets/common/navbar';
+import { useNavigate } from 'react-router-dom';
 
 const sampleData = Array.from({ length: 12 }).map((_, i) => ({
   id: i,
@@ -12,7 +13,10 @@ const sampleData = Array.from({ length: 12 }).map((_, i) => ({
   userImage: '/src/assets/images/sample_user.png',
 }));
 
+
+
 const HirePage: React.FC = () => {
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCard, setSelectedCard] = useState<any>(null);
@@ -55,9 +59,13 @@ const HirePage: React.FC = () => {
         <label className="font-protest text-white text-8xl tracking-wide text-stroke drop-shadow-lg z-60">
           DESIGNER
         </label>
-        <button className="absolute bg-white text-[#5FA8D3] font-bold py-2 px-20 rounded ml-4 font-poppins text-xl border-1 border-[#5FA8D3] top-123  right-155 z-70">
+        <button
+          onClick={() => navigate('/postjob')}
+          className="pointer-events-auto absolute bg-white text-[#5FA8D3] font-bold py-2 px-20 rounded ml-4 font-poppins text-xl border-1 border-[#5FA8D3] top-123 right-155 z-100"
+        >
           Post a Job
         </button>
+
       </div>
 
       {/* Portfolio Section */}
@@ -131,53 +139,55 @@ const HirePage: React.FC = () => {
       </div>
 
       {/* Fullscreen Card Detail Modal */}
-      {selectedCard && (
-        <div className="fixed top-0 left-0 w-full h-full bg-[#e9f9ff] z-[999] overflow-auto px-8 py-12">
-          <div className="flex flex-col lg:flex-row gap-10">
-            {/* Main Preview */}
-            <img
-              src={selectedCard.portfolioImage}
-              alt="Full"
-              className="w-full lg:w-1/2 border-[4px] border-blue-300 rounded-xl"
-            />
+      {
+        selectedCard && (
+          <div className="fixed top-0 left-0 w-full h-full bg-[#e9f9ff] z-[999] overflow-auto px-8 py-12">
+            <div className="flex flex-col lg:flex-row gap-10">
+              {/* Main Preview */}
+              <img
+                src={selectedCard.portfolioImage}
+                alt="Full"
+                className="w-full lg:w-1/2 border-[4px] border-blue-300 rounded-xl"
+              />
 
-            {/* Details */}
-            <div className="flex flex-col justify-between">
-              <div>
-                <h2 className="text-3xl font-bold text-gray-800 mb-4">{selectedCard.name}</h2>
-                <p className="text-gray-700 mb-6 max-w-lg">{selectedCard.description}</p>
+              {/* Details */}
+              <div className="flex flex-col justify-between">
+                <div>
+                  <h2 className="text-3xl font-bold text-gray-800 mb-4">{selectedCard.name}</h2>
+                  <p className="text-gray-700 mb-6 max-w-lg">{selectedCard.description}</p>
+                </div>
+                <button className="bg-white border border-blue-500 text-blue-500 px-6 py-2 rounded-lg font-semibold w-fit hover:bg-blue-100">
+                  Contact Designer
+                </button>
               </div>
-              <button className="bg-white border border-blue-500 text-blue-500 px-6 py-2 rounded-lg font-semibold w-fit hover:bg-blue-100">
-                Contact Designer
-              </button>
             </div>
-          </div>
 
-          {/* Gallery */}
-          <div className="mt-12">
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">More from this designer</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <img
-                  key={i}
-                  src={selectedCard.portfolioImage}
-                  alt={`Work ${i}`}
-                  className="rounded-xl w-full h-48 object-cover border"
-                />
-              ))}
+            {/* Gallery */}
+            <div className="mt-12">
+              <h3 className="text-xl font-semibold text-gray-700 mb-4">More from this designer</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <img
+                    key={i}
+                    src={selectedCard.portfolioImage}
+                    alt={`Work ${i}`}
+                    className="rounded-xl w-full h-48 object-cover border"
+                  />
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Close Button */}
-          <button
-            onClick={() => setSelectedCard(null)}
-            className="absolute top-4 right-4 text-xl text-gray-600 hover:text-red-500"
-          >
-            ✕
-          </button>
-        </div>
-      )}
-    </div>
+            {/* Close Button */}
+            <button
+              onClick={() => setSelectedCard(null)}
+              className="absolute top-4 right-4 text-xl text-gray-600 hover:text-red-500"
+            >
+              ✕
+            </button>
+          </div>
+        )
+      }
+    </div >
   );
 };
 

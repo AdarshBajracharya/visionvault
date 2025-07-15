@@ -14,6 +14,9 @@ import FindJobsPage from './pages/designer/findjobs';
 import ProfilePage2 from './pages/designer/profile';
 import CreatePostPage from './pages/designer/createpost';
 import ProfileCard from './pages/consumer/profilecard';
+import ResetPasswordPage from './assets/common/resetpassword';
+import ConsumerRegisterPage from './pages/consumer/consumerregister';
+import CResetPasswordPage from './assets/common/cresetpassword';
 
 
 const router = createBrowserRouter([
@@ -28,6 +31,10 @@ const router = createBrowserRouter([
   {
     path: '/designerregister',
     element: <RegisterPage />,
+  },
+  {
+    path: '/consumerregister',
+    element: <ConsumerRegisterPage />,
   },
   {
     path: '/customerhome',
@@ -68,6 +75,14 @@ const router = createBrowserRouter([
   {
     path: '/card',
     element: <ProfileCard />,
+  },
+   {
+    path: '/aresetpassword/:token',
+    element: <ResetPasswordPage />,
+  },
+   {
+    path: '/consumerreset/:token',
+    element: <CResetPasswordPage />,
   },
 ]);
 

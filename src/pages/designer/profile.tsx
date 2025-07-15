@@ -1,18 +1,48 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar2 from '../../assets/common/des_nav';
 import { useNavigate } from 'react-router-dom';
-
-const sampleWorks = Array.from({ length: 4 }).map((_, idx) => ({
-    id: idx,
-    title: 'Lorem Ipsum',
-    images: [
-        '/src/assets/images/sample_portfolio.png',
-        '/src/assets/images/sample_portfolio.png',
-    ],
-}));
+import axios from 'axios';
 
 const ProfilePage2: React.FC = () => {
     const navigate = useNavigate();
+
+    const [profile, setProfile] = useState({
+        name: '',
+        email: '',
+        phone: '',
+        experience: '',
+        portfolio: '',
+        image: '',
+    });
+
+    const fetchProfile = async () => {
+        try {
+            const userId = localStorage.getItem("designerUserId");
+            if (!userId) {
+                navigate("/");
+                return;
+            }
+
+            const res = await axios.get(`http://localhost:3000/api/v1/designer/${userId}`);
+            const data = res.data?.data; // ✅ get the actual profile data
+
+            setProfile({
+                name: data.name || 'Unnamed',
+                email: data.email || '',
+                phone: data.phone || '',
+                experience: data.experience || '',
+                portfolio: data.portfolio || '',
+                image: data.image || '/src/assets/images/sample_user.png',
+            });
+        } catch (error) {
+            console.error("Error fetching profile:", error);
+        }
+    };
+
+
+    useEffect(() => {
+        fetchProfile();
+    }, []);
 
     return (
         <div className="flex bg-[#e9f9ff] min-h-screen">
@@ -20,15 +50,18 @@ const ProfilePage2: React.FC = () => {
             <div className="bg-[#5FA8D3] w-64 p-6 flex flex-col justify-between text-white">
                 <div>
                     <div className="text-xl font-bold mb-4">Contact Info:</div>
-                    <p className="mb-2">amirkhan@gmail.com</p>
-                    <p className="mb-4">+977 980-1523050</p>
+                    <p className="mb-2">{profile.email}</p>
+                    <p className="mb-4">{profile.phone}</p>
                     <div className="text-xl font-bold mb-2">Experience:</div>
-                    <p className="mb-4">12+ years</p>
+                    <p className="mb-4">{profile.experience}</p>
                     <div className="text-xl font-bold mb-2">Portfolio</div>
-                    <p>www.amirkhan.com</p>
+                    <p>{profile.portfolio}</p>
                 </div>
                 <button className="bg-[#D9534F] hover:bg-[#c64541] text-white font-bold py-2 rounded mt-6"
-                    onClick={() => navigate('/')}>
+                    onClick={() => {
+                        localStorage.removeItem("designerUserId");
+                        navigate('/');
+                    }}>
                     LOGOUT
                 </button>
             </div>
@@ -40,11 +73,11 @@ const ProfilePage2: React.FC = () => {
                 {/* Profile Info */}
                 <div className="flex flex-col items-center mt-10">
                     <img
-                        src="/src/assets/images/sample_user.png"
+                        src={profile.image}
                         alt="Profile"
                         className="w-28 h-28 rounded-full object-cover mb-2"
                     />
-                    <h1 className="text-4xl font-extrabold text-[#1B4965] mb-6">AMIR KHAN</h1>
+                    <h1 className="text-4xl font-extrabold text-[#1B4965] mb-6">{profile.name}</h1>
                 </div>
 
                 {/* My Works & Add Post */}
@@ -55,26 +88,9 @@ const ProfilePage2: React.FC = () => {
                     </button>
                 </div>
 
-                {/* Works Grid */}
+                {/* Works Grid - Leave unchanged for now */}
                 <div className="flex flex-col gap-6 px-10 pb-10">
-                    {sampleWorks.map((work) => (
-                        <div
-                            key={work.id}
-                            className="bg-white rounded-2xl shadow-md p-4 flex flex-col"
-                        >
-                            <h3 className="text-center font-semibold text-[#1B4965] mb-2">{work.title}</h3>
-                            <div className="flex gap-4 justify-center">
-                                {work.images.map((img, idx) => (
-                                    <img
-                                        key={idx}
-                                        src={img}
-                                        alt={`Work ${idx}`}
-                                        className="w-1/3 rounded-xl object-cover"
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                    ))}
+                    {/* Placeholder for works */}
                 </div>
             </div>
         </div>

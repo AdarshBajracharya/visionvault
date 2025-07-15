@@ -1,33 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import Navbar from '../../assets/common/navbar';
 
-const sampleData = Array.from({ length: 12 }).map((_, i) => ({
-  id: i,
-  name: 'John Doe',
-  role: ['UI/UX Designer', 'Illustrator', 'Animator', 'Logo Designer', 'Mobile Designer'][i % 5],
-  category: ['Web design', 'Illustration', 'Animation', 'Logo', 'Mobile'][i % 5],
-  description:
-    'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
-  portfolioImage: '/src/assets/images/sample_portfolio.png',
-  userImage: '/src/assets/images/sample_user.png',
-}));
+interface Post {
+  _id: string;
+  title: string;
+  description: string;
+  type: string;
+  referencePics: string[];
+  createdBy: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+}
 
 const ExplorePage: React.FC = () => {
+  const [posts, setPosts] = useState<Post[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCard, setSelectedCard] = useState<any>(null);
+  const [selectedCard, setSelectedCard] = useState<Post | null>(null);
 
-  const filterData = sampleData.filter((item) => {
-    const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const res = await axios.get('http://localhost:3000/api/v1/post');
+        setPosts(res.data.data);
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      }
+    };
+
+    fetchPosts();
+  }, []);
+
+  const filterData = posts.filter((item) => {
+    const matchesCategory = selectedCategory === 'All' || item.type === selectedCategory;
     const matchesSearch =
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.role.toLowerCase().includes(searchQuery.toLowerCase());
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
   return (
     <div className="bg-[#e9f9ff] min-h-screen relative">
-      {/* Navbar */}
       <div className="relative z-50">
         <Navbar />
       </div>
@@ -57,6 +73,8 @@ const ExplorePage: React.FC = () => {
         </label>
       </div>
 
+
+
       {/* Portfolio Section */}
       <div className="relative z-20 mt-[700px] w-full px-40">
         {/* Search Bar */}
@@ -78,39 +96,38 @@ const ExplorePage: React.FC = () => {
             <button
               key={item}
               onClick={() => setSelectedCategory(item)}
-              className={`rounded-xl px-10 py-3 transition ${
-                selectedCategory === item
+              className={`rounded-xl px-10 py-3 transition ${selectedCategory === item
                   ? 'bg-[#94d6f5] text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
+                }`}
             >
               {item}
             </button>
           ))}
         </div>
 
-        {/* Portfolio Grid */}
+        {/* Post Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filterData.map((item) => (
             <div
-              key={item.id}
+              key={item._id}
               onClick={() => setSelectedCard(item)}
               className="bg-white rounded-xl shadow-md overflow-hidden cursor-pointer transition hover:shadow-xl"
             >
               <img
-                src={item.portfolioImage}
+                src={`http://localhost:3000/uploads/${item.referencePics[0]}`}
                 alt="Portfolio"
                 className="w-full h-48 object-cover"
               />
               <div className="p-4 flex items-center gap-4">
                 <img
-                  src={item.userImage}
+                  src="/src/assets/images/sample_user.png"
                   alt="User"
                   className="w-12 h-12 rounded-full"
                 />
                 <div>
-                  <p className="font-semibold">{item.name}</p>
-                  <p className="text-sm text-gray-500">{item.role}</p>
+                  <p className="font-semibold">{item.createdBy?.name || 'Unknown'}</p>
+                  <p className="text-sm text-gray-500">{item.type}</p>
                 </div>
               </div>
             </div>
@@ -124,7 +141,7 @@ const ExplorePage: React.FC = () => {
           <div className="flex flex-col lg:flex-row gap-10">
             {/* Main Preview */}
             <img
-              src={selectedCard.portfolioImage}
+              src={`http://localhost:3000/uploads/${selectedCard.referencePics[0]}`}
               alt="Full"
               className="w-full lg:w-1/2 border-[4px] border-blue-300 rounded-xl"
             />
@@ -132,7 +149,7 @@ const ExplorePage: React.FC = () => {
             {/* Details */}
             <div className="flex flex-col justify-between">
               <div>
-                <h2 className="text-3xl font-bold text-gray-800 mb-4">{selectedCard.name}</h2>
+                <h2 className="text-3xl font-bold text-gray-800 mb-4">{selectedCard.createdBy?.name}</h2>
                 <p className="text-gray-700 mb-6 max-w-lg">{selectedCard.description}</p>
               </div>
               <button className="bg-white border border-blue-500 text-blue-500 px-6 py-2 rounded-lg font-semibold w-fit hover:bg-blue-100">
@@ -145,10 +162,10 @@ const ExplorePage: React.FC = () => {
           <div className="mt-12">
             <h3 className="text-xl font-semibold text-gray-700 mb-4">More from this designer</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Array.from({ length: 5 }).map((_, i) => (
+              {selectedCard.referencePics.map((pic, i) => (
                 <img
                   key={i}
-                  src={selectedCard.portfolioImage}
+                  src={`http://localhost:3000/uploads/${pic}`}
                   alt={`Work ${i}`}
                   className="rounded-xl w-full h-48 object-cover border"
                 />

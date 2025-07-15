@@ -1,9 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const CustomerLoginPage: React.FC = () => {
-
     const navigate = useNavigate();
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [message, setMessage] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleLogin = async () => {
+        try {
+            const res = await axios.post("http://localhost:3000/api/v1/consumer/login", {
+                email,
+                password,
+            });
+
+            const consumer = res.data?.consumer || res.data?.data; // use the correct path
+            if (consumer && consumer._id) {
+                localStorage.setItem("consumerId", consumer._id); // ✅ Save ID to localStorage
+                console.log("Consumer ID:", consumer._id);
+            } else {
+                console.warn("No consumer ID found in response.");
+            }
+
+            setMessage("✅ Login successful!");
+            navigate("/customerhome");
+        } catch (err: any) {
+            setMessage(err?.response?.data?.message || "Login failed");
+        }
+    };
+
 
     return (
         <div className="min-h-screen flex font-sans relative">
@@ -21,10 +49,7 @@ const CustomerLoginPage: React.FC = () => {
             {/* Overlay */}
             <div
                 className="absolute inset-0 z-10"
-                style={{
-                    backgroundColor: '#C5F6FF',
-                    opacity: 0.5,
-                }}
+                style={{ backgroundColor: '#C5F6FF', opacity: 0.5 }}
             ></div>
 
             {/* Buttons and graphic */}
@@ -116,26 +141,53 @@ const CustomerLoginPage: React.FC = () => {
                         type="text"
                         placeholder="Email or Username"
                         className="w-full px-4 py-3 border border-blue-300 rounded-full shadow-md text-lg focus:outline-none focus:ring-2 focus:ring-[#5FA8D3]"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                     />
                 </div>
 
                 {/* Password Field */}
                 <div className="w-full">
                     <label className="block mb-2 text-lg text-gray-700 font-medium">Password</label>
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        className="w-full px-4 py-3 border border-blue-300 rounded-full shadow-md text-lg focus:outline-none focus:ring-2 focus:ring-[#5FA8D3]"
-                    />
+                    <div className="relative">
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Password"
+                            className="w-full px-4 py-3 border border-blue-300 rounded-full shadow-md text-lg focus:outline-none focus:ring-2 focus:ring-[#5FA8D3]"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
+                        <span
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-3 cursor-pointer text-sm text-blue-500"
+                        >
+                            {showPassword ? "Hide" : "Show"}
+                        </span>
+                    </div>
                 </div>
 
                 {/* Login Button */}
                 <button
                     className="w-full bg-[#5FA8D3] text-white py-3 rounded-full text-lg font-semibold hover:bg-[#4a94c1] transition-colors duration-300"
-                    onClick={() => navigate('/customerhome')}
+                    onClick={handleLogin}
                 >
                     Login
                 </button>
+
+                <div className="text-center text-gray-600 mt-4">
+                    Don't have an account?{" "}
+                    <span
+                        onClick={() => navigate("/consumerregister")}
+                        className="text-[#5FA8D3] cursor-pointer hover:underline"
+                    >
+                        Register here
+                    </span>
+                </div>
+
+                {/* Message */}
+                {message && (
+                    <div className="text-center text-red-600 text-sm mt-2">{message}</div>
+                )}
             </div>
         </div>
     );
