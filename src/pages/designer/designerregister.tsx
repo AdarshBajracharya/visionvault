@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import axios from 'axios';
 
 const RegisterPage: React.FC = () => {
@@ -12,19 +12,40 @@ const RegisterPage: React.FC = () => {
         portfolio: '',
     });
 
+    const [image, setImage] = useState<File | null>(null);
     const [message, setMessage] = useState('');
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleImageClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            setImage(e.target.files[0]);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        const data = new FormData();
+        Object.entries(formData).forEach(([key, value]) => {
+            data.append(key, value);
+        });
+        if (image) data.append('image', image);
+
         try {
-            const res = await axios.post('http://localhost:3000/api/v1/designer/register', formData);
+            const res = await axios.post(
+                'http://localhost:3000/api/v1/designer/register',
+                data,
+                { headers: { 'Content-Type': 'multipart/form-data' } }
+            );
             setMessage('✅ Registered successfully!');
             console.log(res.data);
         } catch (error: any) {
@@ -51,7 +72,37 @@ const RegisterPage: React.FC = () => {
                 />
 
                 <div className="w-[500px] bg-transparent backdrop-blur-md rounded-xl space-y-6 ml-150">
+
+                    {/* Hidden file input */}
+                    <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        onChange={handleImageChange}
+                        className="hidden"
+                    />
+
+                    {/* Image preview circle (clickable) */}
+                    <div
+                        onClick={handleImageClick}
+                        className="w-32 h-32 rounded-full border-4 border-[#5FA8D3] overflow-hidden cursor-pointer flex items-center justify-center bg-gray-300 relative ml-40"
+                        title="Click to upload image"
+                    >
+                        {image ? (
+                            <img
+                                src={URL.createObjectURL(image)}
+                                alt="Profile Preview"
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <span className="text-gray-600 select-none">Click to add image</span>
+                        )}
+                    </div>
+
                     <form className="space-y-4" onSubmit={handleSubmit}>
+
+                        {/* Your existing inputs unchanged */}
+
                         <div>
                             <label className="text-gray-700 font-medium">Name</label>
                             <input
@@ -102,14 +153,20 @@ const RegisterPage: React.FC = () => {
                             </div>
                             <div className="w-2/5">
                                 <label className="text-gray-700 font-medium">I am a</label>
-                                <input
+                                <select
                                     name="role"
-                                    type="text"
                                     value={formData.role}
                                     onChange={handleChange}
                                     className="w-full px-4 py-3 border rounded-full shadow-md focus:ring-2 focus:ring-blue-300 outline-none"
-                                    placeholder="Designer / Customer"
-                                />
+                                >
+                                    <option value="" disabled>
+                                        Select your role
+                                    </option>
+                                    <option value="Illustrator">Illustrator</option>
+                                    <option value="Web Designer">Web Designer</option>
+                                    <option value="Animator">Animator</option>
+                                    <option value="Mobile Designer">Mobile Designer</option>
+                                </select>
                             </div>
                         </div>
 
