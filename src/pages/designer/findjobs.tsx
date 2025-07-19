@@ -176,7 +176,7 @@ const FindJobsPage: React.FC = () => {
 
       {/* Job Details Modal */}
       {selectedCard && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+        <div className="fixed inset-0 z-50 flex justify-center items-center" style={{ backgroundColor: 'rgba(5, 5, 5, 0.6)' }}>
           <div className="bg-white w-[90%] max-w-4xl rounded-3xl p-8 shadow-xl relative max-h-[90vh] overflow-y-auto">
             <button
               className="absolute top-4 right-6 text-xl font-bold text-gray-600 hover:text-red-500"

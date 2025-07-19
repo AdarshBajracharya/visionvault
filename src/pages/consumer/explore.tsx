@@ -15,11 +15,27 @@ interface Post {
   };
 }
 
+interface Designer {
+  _id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  experience?: string;
+  portfolio?: string;
+  image?: string | null;
+}
+
 const ExplorePage: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCard, setSelectedCard] = useState<Post | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Designer profile modal state
+  const [designerProfile, setDesignerProfile] = useState<Designer | null>(null);
+  const [loadingDesigner, setLoadingDesigner] = useState(false);
+  const [designerError, setDesignerError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -34,6 +50,13 @@ const ExplorePage: React.FC = () => {
     fetchPosts();
   }, []);
 
+  // Reset current image index when a new card is selected
+  useEffect(() => {
+    if (selectedCard) {
+      setCurrentImageIndex(0);
+    }
+  }, [selectedCard]);
+
   const filterData = posts.filter((item) => {
     const matchesCategory = selectedCategory === 'All' || item.type === selectedCategory;
     const matchesSearch =
@@ -41,6 +64,26 @@ const ExplorePage: React.FC = () => {
       item.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  // Fetch designer profile on Contact Designer click
+  const handleContactDesignerClick = async (designerId: string) => {
+    setLoadingDesigner(true);
+    setDesignerError(null);
+    try {
+      const res = await axios.get(`http://localhost:3000/api/v1/designer/${designerId}`);
+      setDesignerProfile(res.data.data);
+    } catch (error) {
+      setDesignerError('Failed to load designer profile.');
+      console.error(error);
+    } finally {
+      setLoadingDesigner(false);
+    }
+  };
+
+  // Close designer profile modal
+  const closeDesignerProfile = () => {
+    setDesignerProfile(null);
+  };
 
   return (
     <div className="bg-[#e9f9ff] min-h-screen relative">
@@ -73,8 +116,6 @@ const ExplorePage: React.FC = () => {
         </label>
       </div>
 
-
-
       {/* Portfolio Section */}
       <div className="relative z-20 mt-[700px] w-full px-40">
         {/* Search Bar */}
@@ -96,10 +137,11 @@ const ExplorePage: React.FC = () => {
             <button
               key={item}
               onClick={() => setSelectedCategory(item)}
-              className={`rounded-xl px-10 py-3 transition ${selectedCategory === item
+              className={`rounded-xl px-10 py-3 transition ${
+                selectedCategory === item
                   ? 'bg-[#94d6f5] text-white'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
+              }`}
             >
               {item}
             </button>
@@ -136,15 +178,41 @@ const ExplorePage: React.FC = () => {
       </div>
 
       {/* Fullscreen Card Detail Modal */}
-      {selectedCard && (
+      {selectedCard && !designerProfile && (
         <div className="fixed top-0 left-0 w-full h-full bg-[#e9f9ff] z-[999] overflow-auto px-8 py-12">
           <div className="flex flex-col lg:flex-row gap-10">
-            {/* Main Preview */}
-            <img
-              src={`http://localhost:3000/uploads/${selectedCard.referencePics[0]}`}
-              alt="Full"
-              className="w-full lg:w-1/2 border-[4px] border-blue-300 rounded-xl"
-            />
+            {/* Main Preview with navigation */}
+            <div className="relative w-full lg:w-1/2">
+              <img
+                src={`http://localhost:3000/uploads/${selectedCard.referencePics[currentImageIndex]}`}
+                alt={`Full ${currentImageIndex}`}
+                className="w-full border-[4px] border-blue-300 rounded-xl"
+              />
+              {/* Previous Button */}
+              <button
+                onClick={() =>
+                  setCurrentImageIndex((prev) =>
+                    prev === 0 ? selectedCard.referencePics.length - 1 : prev - 1
+                  )
+                }
+                className="absolute top-1/2 left-2 -translate-y-1/2 bg-white rounded-full p-2 shadow hover:bg-blue-100"
+                aria-label="Previous Image"
+              >
+                ‹
+              </button>
+              {/* Next Button */}
+              <button
+                onClick={() =>
+                  setCurrentImageIndex((prev) =>
+                    prev === selectedCard.referencePics.length - 1 ? 0 : prev + 1
+                  )
+                }
+                className="absolute top-1/2 right-2 -translate-y-1/2 bg-white rounded-full p-2 shadow hover:bg-blue-100"
+                aria-label="Next Image"
+              >
+                ›
+              </button>
+            </div>
 
             {/* Details */}
             <div className="flex flex-col justify-between">
@@ -152,22 +220,27 @@ const ExplorePage: React.FC = () => {
                 <h2 className="text-3xl font-bold text-gray-800 mb-4">{selectedCard.createdBy?.name}</h2>
                 <p className="text-gray-700 mb-6 max-w-lg">{selectedCard.description}</p>
               </div>
-              <button className="bg-white border border-blue-500 text-blue-500 px-6 py-2 rounded-lg font-semibold w-fit hover:bg-blue-100">
+              <button
+                onClick={() => handleContactDesignerClick(selectedCard.createdBy._id)}
+                className="bg-white border border-blue-500 text-blue-500 px-6 py-2 rounded-lg font-semibold w-fit hover:bg-blue-100"
+              >
                 Contact Designer
               </button>
             </div>
           </div>
 
-          {/* Gallery */}
+          {/* Gallery Thumbnails */}
           <div className="mt-12">
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">More from this designer</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="flex gap-4 overflow-x-auto">
               {selectedCard.referencePics.map((pic, i) => (
                 <img
                   key={i}
                   src={`http://localhost:3000/uploads/${pic}`}
                   alt={`Work ${i}`}
-                  className="rounded-xl w-full h-48 object-cover border"
+                  className={`rounded-xl w-24 h-24 object-cover border cursor-pointer ${
+                    i === currentImageIndex ? 'border-blue-500 border-4' : 'border'
+                  }`}
+                  onClick={() => setCurrentImageIndex(i)}
                 />
               ))}
             </div>
@@ -179,6 +252,61 @@ const ExplorePage: React.FC = () => {
             className="absolute top-4 right-4 text-xl text-gray-600 hover:text-red-500"
           >
             ✕
+          </button>
+        </div>
+      )}
+
+      {/* Designer Profile Modal */}
+      {designerProfile && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-[1000] p-6 overflow-auto">
+          <button
+            onClick={closeDesignerProfile}
+            className="absolute top-4 right-4 text-white text-3xl font-bold hover:text-red-500"
+            aria-label="Close designer profile"
+          >
+            ✕
+          </button>
+
+          <div className="bg-white rounded-xl p-8 max-w-xl w-full shadow-xl">
+            <div className="flex flex-col items-center gap-4">
+              <img
+                src={
+                  designerProfile.image
+                    ? `http://localhost:3000/uploads/${designerProfile.image}`
+                    : '/src/assets/images/sample_user.png'
+                }
+                alt={designerProfile.name}
+                className="w-32 h-32 rounded-full object-cover"
+              />
+              <h2 className="text-2xl font-bold">{designerProfile.name}</h2>
+              <p className="text-gray-700">{designerProfile.email}</p>
+              {designerProfile.phone && <p className="text-gray-700">Phone: {designerProfile.phone}</p>}
+              {designerProfile.experience && (
+                <p className="text-gray-700">Experience: {designerProfile.experience}</p>
+              )}
+              {designerProfile.portfolio && (
+                <p className="text-blue-600 underline">
+                  <a href={designerProfile.portfolio} target="_blank" rel="noreferrer">
+                    Portfolio
+                  </a>
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Show loading or error for designer fetch */}
+      {loadingDesigner && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[1100]">
+          <p className="text-white text-lg">Loading designer profile...</p>
+        </div>
+      )}
+      {designerError && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[1100]">
+          <p className="text-red-500 bg-white px-4 py-2 rounded">{designerError}</p>
+          <button onClick={() => setDesignerError(null)} className="ml-4 px-2 py-1 bg-gray-300 rounded">
+            Close
           </button>
         </div>
       )}
