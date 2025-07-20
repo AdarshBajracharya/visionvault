@@ -174,6 +174,13 @@ const CustomerLoginPage: React.FC = () => {
                     Login
                 </button>
 
+                <div
+                    className="text-center text-[#5FA8D3] cursor-pointer hover:underline mt-2"
+  
+                >
+                    Forgot Password?
+                </div>
+
                 <div className="text-center text-gray-600 mt-4">
                     Don't have an account?{" "}
                     <span

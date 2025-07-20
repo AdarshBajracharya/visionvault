@@ -299,7 +299,7 @@ const ProfilePage2: React.FC = () => {
                     )}
 
                     {/* Edit Form - Only shown when editing a post */}
-                    {editPostId && (
+                    {/* {editPostId && (
                         <div className="mt-8 p-4 bg-white rounded-lg text-black">
                             <h3 className="font-bold mb-3 text-[#1B4965]">Edit Post</h3>
                             <input
@@ -390,7 +390,7 @@ const ProfilePage2: React.FC = () => {
                                 </button>
                             </div>
                         </div>
-                    )}
+                    )} */}
                 </div>
 
                 {/* Fixed position buttons at bottom */}
@@ -527,8 +527,95 @@ const ProfilePage2: React.FC = () => {
                     {posts.map((post) => (
                         <div key={post._id} className="bg-white rounded-lg shadow p-4 flex flex-col">
                             {editPostId === post._id ? (
-                                // Edit mode handled above in sidebar, so skip here
-                                <></>
+                                <>
+                                    <input
+                                        ref={titleInputRef}
+                                        name="title"
+                                        value={editFormData.title}
+                                        onChange={handleEditChange}
+                                        className="w-full border p-2 mb-2 rounded"
+                                        placeholder="Title"
+                                    />
+                                    <textarea
+                                        name="description"
+                                        value={editFormData.description}
+                                        onChange={handleEditChange}
+                                        className="w-full border p-2 mb-2 rounded"
+                                        placeholder="Description"
+                                        rows={3}
+                                    />
+                                    <input
+                                        name="type"
+                                        value={editFormData.type}
+                                        onChange={handleEditChange}
+                                        className="w-full border p-2 mb-2 rounded"
+                                        placeholder="Type"
+                                    />
+
+                                    <div className="mb-2">
+                                        <p className="font-semibold mb-1">Existing Images:</p>
+                                        <div className="flex gap-2 flex-wrap">
+                                            {existingImages.map((img, i) => (
+                                                <div key={i} className="relative">
+                                                    <img
+                                                        src={`http://localhost:3000/uploads/${img}`}
+                                                        alt="existing"
+                                                        className="w-16 h-16 object-cover rounded"
+                                                    />
+                                                    <button
+                                                        onClick={() => handleRemoveExistingImage(img)}
+                                                        className="absolute top-0 right-0 bg-red-600 text-white rounded-full px-1 hover:bg-red-800"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="mb-2">
+                                        <p className="font-semibold mb-1">Add New Images (max total 5):</p>
+                                        <input
+                                            type="file"
+                                            multiple
+                                            onChange={handleAddImages}
+                                            accept="image/*"
+                                            className="w-full border p-2 rounded"
+                                        />
+                                        <div className="flex gap-2 flex-wrap mt-2">
+                                            {editImages.map((file, i) => (
+                                                <div key={i} className="relative">
+                                                    <img
+                                                        src={URL.createObjectURL(file)}
+                                                        alt="new"
+                                                        className="w-16 h-16 object-cover rounded border"
+                                                    />
+                                                    <button
+                                                        onClick={() => handleRemoveNewImage(i)}
+                                                        className="absolute top-0 right-0 bg-red-600 text-white rounded-full px-1 hover:bg-red-800"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex justify-between mt-4">
+                                        <button
+                                            onClick={handleEditSave}
+                                            className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+                                        >
+                                            Save
+                                        </button>
+                                        <button
+                                            onClick={() => setEditPostId(null)}
+                                            className="bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500"
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </>
                             ) : (
                                 <>
                                     <h3 className="text-xl font-semibold mb-2 text-[#1B4965]">{post.title}</h3>
@@ -565,6 +652,7 @@ const ProfilePage2: React.FC = () => {
                             )}
                         </div>
                     ))}
+
                 </div>
 
                 {/* Delete Confirmation Popup */}

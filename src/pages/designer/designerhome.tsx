@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../../assets/common/navbar';
 import Navbar2 from '../../assets/common/des_nav';
 
 const DesignerHomePage: React.FC = () => {
   const [scrollY, setScrollY] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const navigate = useNavigate();
 
   const sections = [
     {
@@ -149,7 +151,9 @@ const DesignerHomePage: React.FC = () => {
             trusted and interactive platform.
           </p>
           <div className="mt-5">
-            <button className="bg-white text-[#5FA8D3] mt-5 font-bold py-2 px-18 rounded font-poppins text-lg border-1 border-[#5FA8D3]">
+            <button
+              onClick={() => navigate('/findjobs')}
+              className="bg-white text-[#5FA8D3] mt-5 font-bold py-2 px-18 rounded font-poppins text-lg border-1 border-[#5FA8D3]">
               Find Jobs
             </button>
             <img

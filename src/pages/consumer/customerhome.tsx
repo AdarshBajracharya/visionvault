@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../../assets/common/navbar';
+import { useNavigate } from 'react-router-dom';
 
 const ConsumerHomePage: React.FC = () => {
   const [scrollY, setScrollY] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const navigate = useNavigate();
 
   const sections = [
     {
@@ -149,10 +151,12 @@ const ConsumerHomePage: React.FC = () => {
             experience.
           </p>
           <div className="mt-5">
-            <button className="bg-[#5FA8D3] text-white font-bold py-3 px-10 rounded font-poppins text-xl">
+            <button 
+            onClick={() => navigate('/explore')}
+            className="bg-[#5FA8D3] text-white font-bold py-3 px-10 rounded font-poppins text-xl">
               Explore
             </button>
-            <button className="bg-white text-[#5FA8D3] font-bold py-3 px-10 rounded ml-4 font-poppins text-xl border-2 border-[#5FA8D3]">
+            <button onClick={() => navigate('/hire')} className="bg-white text-[#5FA8D3] font-bold py-3 px-10 rounded ml-4 font-poppins text-xl border-2 border-[#5FA8D3]">
               Hire a Designer
             </button>
             <img
