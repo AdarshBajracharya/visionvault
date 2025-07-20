@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Navbar from '../../assets/common/navbar';
 
@@ -30,12 +30,20 @@ const ExplorePage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCard, setSelectedCard] = useState<Post | null>(null);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Designer profile modal state
   const [designerProfile, setDesignerProfile] = useState<Designer | null>(null);
   const [loadingDesigner, setLoadingDesigner] = useState(false);
   const [designerError, setDesignerError] = useState<string | null>(null);
+
+  // Modal image viewer state
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  // Drag scroll state for works gallery
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -49,13 +57,6 @@ const ExplorePage: React.FC = () => {
 
     fetchPosts();
   }, []);
-
-  // Reset current image index when a new card is selected
-  useEffect(() => {
-    if (selectedCard) {
-      setCurrentImageIndex(0);
-    }
-  }, [selectedCard]);
 
   const filterData = posts.filter((item) => {
     const matchesCategory = selectedCategory === 'All' || item.type === selectedCategory;
@@ -80,10 +81,42 @@ const ExplorePage: React.FC = () => {
     }
   };
 
-  // Close designer profile modal
+  // Close designer profile modal and image viewer
   const closeDesignerProfile = () => {
     setDesignerProfile(null);
+    setSelectedIndex(null);
   };
+
+  // Modal viewer navigation
+  const openModal = (idx: number) => setSelectedIndex(idx);
+  const closeModal = () => setSelectedIndex(null);
+  const prevImage = () =>
+    setSelectedIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : prev));
+  const nextImage = () =>
+    setSelectedIndex((prev) =>
+      prev !== null && prev < currentWorks.length - 1 ? prev + 1 : prev
+    );
+
+  // Drag scroll handlers for works gallery
+  const onMouseDown = (e: React.MouseEvent) => {
+    if (!scrollRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+  const onMouseLeaveOrUp = () => setIsDragging(false);
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 1; // scroll speed
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
+
+  // Collect all works of current designer
+  const currentWorks = posts
+    .filter((post) => post.createdBy._id === designerProfile?._id)
+    .flatMap((post) => post.referencePics);
 
   return (
     <div className="bg-[#e9f9ff] min-h-screen relative">
@@ -184,34 +217,10 @@ const ExplorePage: React.FC = () => {
             {/* Main Preview with navigation */}
             <div className="relative w-full lg:w-1/2">
               <img
-                src={`http://localhost:3000/uploads/${selectedCard.referencePics[currentImageIndex]}`}
-                alt={`Full ${currentImageIndex}`}
+                src={`http://localhost:3000/uploads/${selectedCard.referencePics[0]}`}
+                alt={`Full 0`}
                 className="w-full border-[4px] border-blue-300 rounded-xl"
               />
-              {/* Previous Button */}
-              <button
-                onClick={() =>
-                  setCurrentImageIndex((prev) =>
-                    prev === 0 ? selectedCard.referencePics.length - 1 : prev - 1
-                  )
-                }
-                className="absolute top-1/2 left-2 -translate-y-1/2 bg-white rounded-full p-2 shadow hover:bg-blue-100"
-                aria-label="Previous Image"
-              >
-                ‹
-              </button>
-              {/* Next Button */}
-              <button
-                onClick={() =>
-                  setCurrentImageIndex((prev) =>
-                    prev === selectedCard.referencePics.length - 1 ? 0 : prev + 1
-                  )
-                }
-                className="absolute top-1/2 right-2 -translate-y-1/2 bg-white rounded-full p-2 shadow hover:bg-blue-100"
-                aria-label="Next Image"
-              >
-                ›
-              </button>
             </div>
 
             {/* Details */}
@@ -229,23 +238,6 @@ const ExplorePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Gallery Thumbnails */}
-          <div className="mt-12">
-            <div className="flex gap-4 overflow-x-auto">
-              {selectedCard.referencePics.map((pic, i) => (
-                <img
-                  key={i}
-                  src={`http://localhost:3000/uploads/${pic}`}
-                  alt={`Work ${i}`}
-                  className={`rounded-xl w-24 h-24 object-cover border cursor-pointer ${
-                    i === currentImageIndex ? 'border-blue-500 border-4' : 'border'
-                  }`}
-                  onClick={() => setCurrentImageIndex(i)}
-                />
-              ))}
-            </div>
-          </div>
-
           {/* Close Button */}
           <button
             onClick={() => setSelectedCard(null)}
@@ -256,42 +248,138 @@ const ExplorePage: React.FC = () => {
         </div>
       )}
 
-      {/* Designer Profile Modal */}
+      {/* Designer Profile Modal matching your ProfileCard style */}
       {designerProfile && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-[1000] p-6 overflow-auto">
+        <div className="fixed inset-0 bg-[#d3f1fc] flex items-center justify-center z-[1000] overflow-auto p-6">
+          {/* Close Button */}
           <button
             onClick={closeDesignerProfile}
-            className="absolute top-4 right-4 text-white text-3xl font-bold hover:text-red-500"
-            aria-label="Close designer profile"
+            className="absolute top-6 right-6 text-3xl text-gray-700 hover:text-red-500 font-bold"
           >
             ✕
           </button>
 
-          <div className="bg-white rounded-xl p-8 max-w-xl w-full shadow-xl">
-            <div className="flex flex-col items-center gap-4">
-              <img
-                src={
-                  designerProfile.image
-                    ? `http://localhost:3000/uploads/${designerProfile.image}`
-                    : '/src/assets/images/sample_user.png'
-                }
-                alt={designerProfile.name}
-                className="w-32 h-32 rounded-full object-cover"
-              />
-              <h2 className="text-2xl font-bold">{designerProfile.name}</h2>
-              <p className="text-gray-700">{designerProfile.email}</p>
-              {designerProfile.phone && <p className="text-gray-700">Phone: {designerProfile.phone}</p>}
-              {designerProfile.experience && (
-                <p className="text-gray-700">Experience: {designerProfile.experience}</p>
-              )}
-              {designerProfile.portfolio && (
-                <p className="text-blue-600 underline">
-                  <a href={designerProfile.portfolio} target="_blank" rel="noreferrer">
-                    Portfolio
-                  </a>
-                </p>
-              )}
+          <div className="relative max-w-5xl w-full mx-auto bg-white shadow-2xl rounded-3xl p-10 overflow-hidden">
+            <img
+              src="/src/assets/images/V.png"
+              alt="Placeholder"
+              className="absolute inset-0 m-auto opacity-10 w-1/2 h-auto object-contain pointer-events-none z-0"
+              style={{ top: '50%', transform: 'translateY(-20%)' }}
+            />
+
+            {/* Profile Info */}
+            <div className="flex flex-col md:flex-row justify-between items-center md:items-start relative z-10">
+              <div className="flex items-center gap-6 mb-6 md:mb-0">
+                <img
+                  src={
+                    designerProfile.image
+                      ? `http://localhost:3000/uploads/${designerProfile.image}`
+                      : "/src/assets/images/sample_user.png"
+                  }
+                  alt={designerProfile.name}
+                  className="w-24 h-24 rounded-full object-cover"
+                />
+                <div>
+                  <h2 className="text-xl font-bold">{designerProfile.name}</h2>
+                  <p className="text-gray-700">
+                    {designerProfile.experience ? `Experience: ${designerProfile.experience}` : "Designer"}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <h3 className="font-bold text-lg">Contact:</h3>
+                {designerProfile.portfolio && (
+                  <p className="text-blue-600 underline">
+                    <a href={designerProfile.portfolio} target="_blank" rel="noreferrer">
+                      {designerProfile.portfolio}
+                    </a>
+                  </p>
+                )}
+                <p className="text-gray-700">{designerProfile.email}</p>
+                {designerProfile.phone && <p className="text-gray-700">{designerProfile.phone}</p>}
+              </div>
             </div>
+
+            {/* Works */}
+            <div className="mt-10 relative z-10">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">My Works</h3>
+              </div>
+
+              <div
+                ref={scrollRef}
+                className="flex gap-4 overflow-x-auto cursor-grab active:cursor-grabbing"
+                onMouseDown={onMouseDown}
+                onMouseLeave={onMouseLeaveOrUp}
+                onMouseUp={onMouseLeaveOrUp}
+                onMouseMove={onMouseMove}
+              >
+                {currentWorks.length > 0 ? (
+                  currentWorks.map((img, idx) => (
+                    <img
+                      key={idx}
+                      src={`http://localhost:3000/uploads/${img}`}
+                      alt={`Work ${idx}`}
+                      onClick={() => openModal(idx)}
+                      className="w-72 h-48 object-cover rounded-xl border border-gray-200 shadow-sm cursor-pointer flex-shrink-0"
+                    />
+                  ))
+                ) : (
+                  <p className="text-gray-600">No works available</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Viewer for works */}
+      {selectedIndex !== null && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-50 p-4">
+          {/* Close button */}
+          <button
+            onClick={closeModal}
+            className="absolute top-4 right-4 text-white text-3xl font-bold"
+          >
+            ✕
+          </button>
+
+          {/* Main enlarged image */}
+          <div className="flex items-center justify-center relative mb-4">
+            <button
+              onClick={prevImage}
+              disabled={selectedIndex === 0}
+              className="text-white text-4xl font-bold hover:scale-110 transition disabled:opacity-30 absolute left-[-50px]"
+            >
+              ‹
+            </button>
+            <img
+              src={`http://localhost:3000/uploads/${currentWorks[selectedIndex]}`}
+              alt={`Enlarged ${selectedIndex}`}
+              className="max-w-4xl max-h-[80vh] rounded-lg shadow-lg object-contain"
+            />
+            <button
+              onClick={nextImage}
+              disabled={selectedIndex === currentWorks.length - 1}
+              className="text-white text-4xl font-bold hover:scale-110 transition disabled:opacity-30 absolute right-[-50px]"
+            >
+              ›
+            </button>
+          </div>
+
+          {/* Thumbnails row */}
+          <div className="flex gap-2 mt-2 overflow-x-auto max-w-full">
+            {currentWorks.map((img, idx) => (
+              <img
+                key={idx}
+                src={`http://localhost:3000/uploads/${img}`}
+                alt={`Thumb ${idx}`}
+                onClick={() => setSelectedIndex(idx)}
+                className={`w-20 h-14 object-cover rounded-md cursor-pointer border-2 ${
+                  idx === selectedIndex ? 'border-[#5FA8D3]' : 'border-transparent'
+                }`}
+              />
+            ))}
           </div>
         </div>
       )}

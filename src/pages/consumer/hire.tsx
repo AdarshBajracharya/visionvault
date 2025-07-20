@@ -1,33 +1,149 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
 import Navbar from '../../assets/common/navbar';
 import { useNavigate } from 'react-router-dom';
 
-const sampleData = Array.from({ length: 12 }).map((_, i) => ({
-  id: i,
-  name: 'John Doe',
-  role: ['UI/UX Designer', 'Illustrator', 'Animator', 'Logo Designer', 'Mobile Designer'][i % 5],
-  category: ['Web design', 'Illustration', 'Animation', 'Logo', 'Mobile'][i % 5],
-  description:
-    'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
-  portfolioImage: '/src/assets/images/sample_portfolio.png',
-  userImage: '/src/assets/images/sample_user.png',
-}));
-
-
+interface Designer {
+  _id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  portfolio?: string;
+  role?: string;
+  image?: string;
+  experience?: string;
+}
 
 const HirePage: React.FC = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCard, setSelectedCard] = useState<any>(null);
+  const [selectedDesigner, setSelectedDesigner] = useState<Designer | null>(null);
+  const [designers, setDesigners] = useState<Designer[]>([]);
 
-  const filterData = sampleData.filter((item) => {
-    const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
+  // Works images of selected designer
+  const [designerWorks, setDesignerWorks] = useState<string[]>([]);
+
+  // All designers' works keyed by designer ID
+  const [allDesignerWorks, setAllDesignerWorks] = useState<Record<string, string[]>>({});
+
+  // Image modal inside profile modal
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  // Drag scroll state for works gallery inside modal
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  useEffect(() => {
+    const fetchDesigners = async () => {
+      try {
+        const res = await axios.get('http://localhost:3000/api/v1/designer');
+        console.log('API response data:', res.data);
+        const data = Array.isArray(res.data.data) ? res.data.data : [];
+        setDesigners(data);
+      } catch (error) {
+        console.error('Error fetching designers', error);
+      }
+    };
+
+    fetchDesigners();
+  }, []);
+
+  // Fetch works for all designers after designers are loaded
+  useEffect(() => {
+    const fetchAllWorks = async () => {
+      try {
+        const worksMap: Record<string, string[]> = {};
+
+        await Promise.all(
+          designers.map(async (designer) => {
+            try {
+              const res = await axios.get(`http://localhost:3000/api/v1/post/designer/${designer._id}`);
+              if (res.data.success) {
+                const pics = res.data.data.flatMap((post: any) => post.referencePics);
+                worksMap[designer._id] = pics;
+              } else {
+                worksMap[designer._id] = [];
+              }
+            } catch {
+              worksMap[designer._id] = [];
+            }
+          })
+        );
+
+        setAllDesignerWorks(worksMap);
+      } catch (error) {
+        console.error("Error fetching all designer works", error);
+      }
+    };
+
+    if (designers.length > 0) {
+      fetchAllWorks();
+    }
+  }, [designers]);
+
+  const filteredDesigners = designers.filter((designer) => {
+    const matchesCategory =
+      selectedCategory === 'All' ||
+      (designer.role?.toLowerCase().includes(selectedCategory.toLowerCase()) ?? false);
+
     const matchesSearch =
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.role.toLowerCase().includes(searchQuery.toLowerCase());
+      designer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (designer.role?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
+
     return matchesCategory && matchesSearch;
   });
+
+  // Fetch works of a designer by ID (for profile modal)
+  const fetchDesignerWorks = async (designerId: string) => {
+    try {
+      const res = await axios.get(`http://localhost:3000/api/v1/post/designer/${designerId}`);
+      if (res.data.success) {
+        const pics = res.data.data.flatMap((post: any) => post.referencePics);
+        setDesignerWorks(pics);
+      } else {
+        setDesignerWorks([]);
+      }
+    } catch (error) {
+      console.error('Error fetching designer works', error);
+      setDesignerWorks([]);
+    }
+  };
+
+  // Open profile and load works
+  const openDesignerProfile = (designer: Designer) => {
+    setSelectedDesigner(designer);
+    setSelectedIndex(null);
+    fetchDesignerWorks(designer._id);
+  };
+
+  // Image modal controls
+  const openImageModal = (idx: number) => setSelectedIndex(idx);
+  const closeImageModal = () => setSelectedIndex(null);
+  const prevImage = () =>
+    setSelectedIndex((prev) => (prev !== null && prev > 0 ? prev - 1 : prev));
+  const nextImage = () =>
+    setSelectedIndex((prev) =>
+      prev !== null && prev < (designerWorks.length - 1) ? prev + 1 : prev
+    );
+
+  // Drag scroll handlers for works gallery inside profile modal
+  const onMouseDown = (e: React.MouseEvent) => {
+    if (!scrollRef.current) return;
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
+  const onMouseLeaveOrUp = () => setIsDragging(false);
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !scrollRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - scrollRef.current.offsetLeft;
+    const walk = (x - startX) * 1; // scroll speed
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
 
   return (
     <div className="bg-[#e9f9ff] min-h-screen relative">
@@ -46,7 +162,7 @@ const HirePage: React.FC = () => {
         <img
           src="/src/assets/images/laltin.png"
           alt="laltin"
-          className="rotate-[1.02deg] absolute top-[100px] right-[290px] z-50 h-[550px] "
+          className="rotate-[1.02deg] absolute top-[100px] right-[290px] z-50 h-[550px]"
         />
         <img
           src="/src/assets/images/speaker.png"
@@ -65,17 +181,16 @@ const HirePage: React.FC = () => {
         >
           Post a Job
         </button>
-
       </div>
 
-      {/* Portfolio Section */}
+      {/* Designer Cards */}
       <div className="relative z-20 mt-[700px] w-full px-40">
-        {/* Search Bar */}
+        {/* Search */}
         <div className="w-full mb-6 px-2">
           <div className="flex items-center bg-white rounded-full px-6 py-3 shadow-lg w-full">
             <input
               type="text"
-              placeholder="What are you searching for?"
+              placeholder="Search designers or roles..."
               className="flex-grow bg-transparent text-gray-700 focus:outline-none"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -85,13 +200,13 @@ const HirePage: React.FC = () => {
 
         {/* Filters */}
         <div className="flex flex-wrap gap-4 justify-center px-2 mb-8 w-full text-lg">
-          {['All', 'Illustration', 'Web design', 'Logo', 'Animation', 'Mobile'].map((item) => (
+          {['All', 'Illustrator', 'Web designer', 'Animator', 'Mobile Designer'].map((item) => (
             <button
               key={item}
               onClick={() => setSelectedCategory(item)}
               className={`rounded-xl px-10 py-3 transition ${selectedCategory === item
-                ? 'bg-[#94d6f5] text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  ? 'bg-[#94d6f5] text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
             >
               {item}
@@ -101,93 +216,192 @@ const HirePage: React.FC = () => {
 
         {/* Designer Cards Grid */}
         <div className="flex flex-col gap-6">
-          {filterData.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white rounded-2xl shadow-lg p-4 flex flex-col gap-4"
-            >
+          {filteredDesigners.map((designer) => (
+            <div key={designer._id} className="bg-white rounded-2xl shadow-lg p-4 flex flex-col gap-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <img
-                    src={item.userImage}
-                    alt="User"
+                    src={
+                      designer.image
+                        ? `http://localhost:3000/uploads/${designer.image}`
+                        : '/src/assets/images/sample_user.png'
+                    }
+                    alt={designer.name}
                     className="w-12 h-12 rounded-full object-cover"
                   />
                   <div>
-                    <p className="font-semibold">{item.name}</p>
-                    <p className="text-gray-500 text-sm">{item.role}</p>
+                    <p className="font-semibold">{designer.name}</p>
+                    <p className="text-gray-500 text-sm">{designer.role}</p>
                   </div>
                 </div>
-                <button className="text-blue-500 hover:underline font-medium">
+                <button
+                  onClick={() => openDesignerProfile(designer)}
+                  className="text-blue-500 hover:underline font-medium"
+                >
                   View Profile
                 </button>
               </div>
-              <div className="flex gap-4 overflow-x-auto">
-                {[1, 2, 3].map((i) => (
-                  <img
-                    key={i}
-                    src={item.portfolioImage}
-                    alt={`Preview ${i}`}
-                    className="rounded-xl object-cover h-32 w-full sm:w-1/3 flex-shrink-0"
-                  />
-                ))}
-              </div>
+
+              {/* Works preview gallery below each designer */}
+              {allDesignerWorks[designer._id] && allDesignerWorks[designer._id].length > 0 && (
+                <div className="flex gap-2 overflow-x-auto mt-2">
+                  {allDesignerWorks[designer._id].slice(0, 3).map((img, idx) => (
+                    <img
+                      key={idx}
+                      src={`http://localhost:3000/uploads/${img}`}
+                      alt={`Work ${idx}`}
+                      className="w-70 h-48 object-cover rounded-md border border-gray-300"
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
-
       </div>
 
-      {/* Fullscreen Card Detail Modal */}
-      {
-        selectedCard && (
-          <div className="fixed top-0 left-0 w-full h-full bg-[#e9f9ff] z-[999] overflow-auto px-8 py-12">
-            <div className="flex flex-col lg:flex-row gap-10">
-              {/* Main Preview */}
-              <img
-                src={selectedCard.portfolioImage}
-                alt="Full"
-                className="w-full lg:w-1/2 border-[4px] border-blue-300 rounded-xl"
-              />
+      {/* Profile Modal */}
+      {selectedDesigner && (
+        <div className="fixed inset-0 bg-[#d3f1fc] flex items-center justify-center z-[1000] overflow-auto p-6">
+          <button
+            onClick={() => {
+              setSelectedDesigner(null);
+              setSelectedIndex(null);
+              setDesignerWorks([]);
+            }}
+            className="absolute top-6 right-6 text-3xl text-gray-700 hover:text-red-500 font-bold"
+          >
+            ✕
+          </button>
 
-              {/* Details */}
-              <div className="flex flex-col justify-between">
+          <div className="relative max-w-5xl w-full mx-auto bg-white shadow-2xl rounded-3xl p-10 overflow-hidden">
+            <img
+              src="/src/assets/images/V.png"
+              alt="Placeholder"
+              className="absolute inset-0 m-auto opacity-10 w-1/2 h-auto object-contain pointer-events-none z-0"
+              style={{ top: '50%', transform: 'translateY(-20%)' }}
+            />
+
+            {/* Profile Info */}
+            <div className="flex flex-col md:flex-row justify-between items-center md:items-start relative z-10">
+              <div className="flex items-center gap-6 mb-6 md:mb-0">
+                <img
+                  src={
+                    selectedDesigner.image
+                      ? `http://localhost:3000/uploads/${selectedDesigner.image}`
+                      : '/src/assets/images/sample_user.png'
+                  }
+                  alt={selectedDesigner.name}
+                  className="w-24 h-24 rounded-full object-cover"
+                />
                 <div>
-                  <h2 className="text-3xl font-bold text-gray-800 mb-4">{selectedCard.name}</h2>
-                  <p className="text-gray-700 mb-6 max-w-lg">{selectedCard.description}</p>
+                  <h2 className="text-xl font-bold">{selectedDesigner.name}</h2>
+                  <p className="text-gray-700">
+                    {selectedDesigner.experience
+                      ? `Experience: ${selectedDesigner.experience}`
+                      : 'Designer'}
+                  </p>
+                  {selectedDesigner.portfolio && (
+                    <a
+                      href={selectedDesigner.portfolio}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-blue-600 underline"
+                    >
+                      Portfolio
+                    </a>
+                  )}
                 </div>
-                <button className="bg-white border border-blue-500 text-blue-500 px-6 py-2 rounded-lg font-semibold w-fit hover:bg-blue-100">
-                  Contact Designer
-                </button>
+              </div>
+              <div className="text-right">
+                <h3 className="font-bold text-lg">Contact:</h3>
+                <p className="text-gray-700">{selectedDesigner.email}</p>
+                {selectedDesigner.phone && (
+                  <p className="text-gray-700">{selectedDesigner.phone}</p>
+                )}
               </div>
             </div>
 
-            {/* Gallery */}
-            <div className="mt-12">
-              <h3 className="text-xl font-semibold text-gray-700 mb-4">More from this designer</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <img
-                    key={i}
-                    src={selectedCard.portfolioImage}
-                    alt={`Work ${i}`}
-                    className="rounded-xl w-full h-48 object-cover border"
-                  />
-                ))}
+            {/* Works Gallery */}
+            <div className="mt-10 relative z-10">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold">My Works</h3>
+              </div>
+
+              <div
+                ref={scrollRef}
+                className="flex gap-4 overflow-x-auto cursor-grab active:cursor-grabbing"
+                onMouseDown={onMouseDown}
+                onMouseLeave={onMouseLeaveOrUp}
+                onMouseUp={onMouseLeaveOrUp}
+                onMouseMove={onMouseMove}
+              >
+                {designerWorks.length > 0 ? (
+                  designerWorks.map((img, idx) => (
+                    <img
+                      key={idx}
+                      src={`http://localhost:3000/uploads/${img}`}
+                      alt={`Work ${idx}`}
+                      onClick={() => openImageModal(idx)}
+                      className="w-72 h-48 object-cover rounded-xl border border-gray-200 shadow-sm cursor-pointer flex-shrink-0"
+                    />
+                  ))
+                ) : (
+                  <p className="text-gray-600">No works available</p>
+                )}
               </div>
             </div>
+          </div>
+        </div>
+      )}
 
-            {/* Close Button */}
+      {/* Image Modal inside Profile Modal */}
+      {selectedIndex !== null && selectedDesigner && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-50 p-4">
+          <button
+            onClick={closeImageModal}
+            className="absolute top-4 right-4 text-white text-3xl font-bold"
+          >
+            ✕
+          </button>
+
+          <div className="flex items-center justify-center relative mb-4">
             <button
-              onClick={() => setSelectedCard(null)}
-              className="absolute top-4 right-4 text-xl text-gray-600 hover:text-red-500"
+              onClick={prevImage}
+              disabled={selectedIndex === 0}
+              className="text-white text-4xl font-bold hover:scale-110 transition disabled:opacity-30 absolute left-[-50px]"
             >
-              ✕
+              ‹
+            </button>
+            <img
+              src={`http://localhost:3000/uploads/${designerWorks[selectedIndex]}`}
+              alt={`Enlarged ${selectedIndex}`}
+              className="max-w-4xl max-h-[80vh] rounded-lg shadow-lg object-contain"
+            />
+            <button
+              onClick={nextImage}
+              disabled={selectedIndex === designerWorks.length - 1}
+              className="text-white text-4xl font-bold hover:scale-110 transition disabled:opacity-30 absolute right-[-50px]"
+            >
+              ›
             </button>
           </div>
-        )
-      }
-    </div >
+
+          <div className="flex gap-2 mt-2 overflow-x-auto max-w-full">
+            {designerWorks.map((img, idx) => (
+              <img
+                key={idx}
+                src={`http://localhost:3000/uploads/${img}`}
+                alt={`Thumb ${idx}`}
+                onClick={() => setSelectedIndex(idx)}
+                className={`w-20 h-14 object-cover rounded-md cursor-pointer border-2 ${idx === selectedIndex ? 'border-[#5FA8D3]' : 'border-transparent'
+                  }`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
