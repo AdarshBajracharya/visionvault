@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Protest+Strike&family=Poppins&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Encode+Sans+Semi+Condensed&family=Protest+Strike&family=Poppins&display=swap');
+@import "tailwindcss";
+
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #e9f9ff ;
+}
+
+.font-protest {
+    font-family: 'Protest Strike', cursive;
+}
+
+.font-encode {
+    font-family: 'Encode Sans Semi Condensed', sans-serif;
+}
+
+.parallax {
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.text-stroke {
+  -webkit-text-stroke: 1px #5E93E3; /* adjust width & color as needed */
+}
