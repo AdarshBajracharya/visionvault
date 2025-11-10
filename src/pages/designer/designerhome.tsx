@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Navbar from '../../assets/common/navbar';
+// import Navbar from '../../assets/common/navbar';
 import Navbar2 from '../../assets/common/des_nav';
 
 const DesignerHomePage: React.FC = () => {
