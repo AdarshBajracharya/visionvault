@@ -16,8 +16,8 @@ const DesignerLoginPage: React.FC = () => {
 
     // Forgot/reset password modal states
     const [modalEmail, setModalEmail] = useState("");
-    const [resetToken, setResetToken] = useState("");
-    const [newPassword, setNewPassword] = useState("");
+    // const [resetToken, setResetToken] = useState("");
+    // const [newPassword, setNewPassword] = useState("");
     const [modalMessage, setModalMessage] = useState("");
 
     // Handle Login
@@ -60,7 +60,7 @@ const DesignerLoginPage: React.FC = () => {
         }
     };
 
-  
+
 
     return (
         <div className="min-h-screen flex font-sans relative">
@@ -165,8 +165,8 @@ const DesignerLoginPage: React.FC = () => {
                         setShowModal(true);
                         setModalStep("forgot");
                         setModalEmail("");
-                        setResetToken("");
-                        setNewPassword("");
+                        // setResetToken("");
+                        // setNewPassword("");
                         setModalMessage("");
                     }}
                 >
