@@ -60,36 +60,7 @@ const DesignerLoginPage: React.FC = () => {
         }
     };
 
-    // Handle Reset Password
-    // const handleResetPassword = async () => {
-    //     if (!resetToken) {
-    //         setModalMessage("Please enter the reset token sent to your email.");
-    //         return;
-    //     }
-    //     if (!newPassword) {
-    //         setModalMessage("Please enter your new password.");
-    //         return;
-    //     }
-
-    //     try {
-    //         const res = await axios.post(
-    //             `http://localhost:3000/api/v1/designer/resetpassword/${resetToken}`,
-    //             { password: newPassword }
-    //         );
-    //         setModalMessage(res.data.message || "Password reset successful!");
-    //         // Optionally close modal after success
-    //         setTimeout(() => {
-    //             setShowModal(false);
-    //             setModalStep("forgot");
-    //             setModalEmail("");
-    //             setResetToken("");
-    //             setNewPassword("");
-    //             setModalMessage("");
-    //         }, 2000);
-    //     } catch (err: any) {
-    //         setModalMessage(err?.response?.data?.message || "Failed to reset password");
-    //     }
-    // };
+  
 
     return (
         <div className="min-h-screen flex font-sans relative">
